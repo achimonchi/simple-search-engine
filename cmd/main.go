@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"meilisearch/pkg/db"
 	"meilisearch/usecase/api"
 )
@@ -17,6 +18,14 @@ func main() {
 
 	if err != nil {
 		panic(err)
+	}
+
+	migrate := flag.Bool("migrate", false, "setup migration for golang")
+
+	flag.Parse()
+
+	if *migrate {
+		dbConn.MigratePostgres()
 	}
 
 	myAPI := api.NewAPI().SetDatabase(dbConn).SetPort(":8888").SetMaxProcess(1)
