@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.1
+    container_name: meilisearch
+    ports:
+      - 7700:7700
+    environment:
+      - MEILI_ENV=development
+    volumes:
+      - ${PWD}/db/meili:/meili_data 
+    command: meilisearch --master-key="ThisIsMasterKey"
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres-search
+    ports:
+      - 6632:5432
+    environment:
+      - POSTGRES_USER=user-search
+      - POSTGRES_PASSWORD=user-pass
+      - POSTGRES_DB=search
+    volumes:
+      - ${PWD}/db/postgres:/var/lib/postgresql/data
