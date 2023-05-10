@@ -52,6 +52,9 @@ CREATE TABLE "products" (
     created_at timestamptz DEFAULT NOW()
 );
 `
+var removeProducts = `
+DROP TABLE products;
+`
 
 func (d DatabaseConnection) MigratePostgres() {
 	log.Println("running db migration")
@@ -60,4 +63,13 @@ func (d DatabaseConnection) MigratePostgres() {
 		panic(err)
 	}
 	log.Println("migration done")
+}
+
+func (d DatabaseConnection) RemoveTablePostgres() {
+	log.Println("running remove table")
+	_, err := d.Postgres.Exec(removeProducts)
+	if err != nil {
+		panic(err)
+	}
+	log.Println("remove table done")
 }
