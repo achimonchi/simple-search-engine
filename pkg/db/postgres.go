@@ -49,6 +49,7 @@ CREATE TABLE "products" (
     description text NOT NULL,
     price float NOT NULL,
     stock int NOT NULL,
+	category varchar(100) NOT NULL,
     created_at timestamptz DEFAULT NOW()
 );
 `

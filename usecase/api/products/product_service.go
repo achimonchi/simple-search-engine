@@ -2,6 +2,7 @@ package products
 
 import (
 	"context"
+	"time"
 )
 
 // i will seperate the repository based on functionallity
@@ -51,9 +52,18 @@ func (p ProductService) SetSearchRepository(search ProductSearchAndWrite) Produc
 }
 
 func (p ProductService) CreateProduct(ctx context.Context, req ProductModel) (err error) {
+	req.CreatedAt = time.Now()
 	// insert into repository
 	err = p.repo.InsertProduct(ctx, req)
+	if err != nil {
+		return
+	}
 
 	return
 
+}
+
+func (p ProductService) GetAllProduct(ctx context.Context) (products []ProductEntity, err error) {
+	products, err = p.repo.GetProductAll(ctx)
+	return
 }

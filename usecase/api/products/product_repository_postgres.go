@@ -3,6 +3,7 @@ package products
 import (
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 func NewProductRepositoryPostgres(db *sql.DB) ProductRepositoryPostgres {
@@ -18,7 +19,7 @@ type ProductRepositoryPostgres struct {
 // GetProductAll implements ProductReadAndWrite
 func (p ProductRepositoryPostgres) GetProductAll(ctx context.Context) (products []ProductEntity, err error) {
 	query := `
-		SELECT id, name, description, price, stock, created_at
+		SELECT id, category, name, description, price, stock, created_at
 		FROM products
 	`
 
@@ -31,6 +32,7 @@ func (p ProductRepositoryPostgres) GetProductAll(ctx context.Context) (products 
 		product := ProductEntity{}
 		err = rows.Scan(
 			&product.Id,
+			&product.Category,
 			&product.Name,
 			&product.Description,
 			&product.Price,
@@ -52,7 +54,7 @@ func (p ProductRepositoryPostgres) GetProductAll(ctx context.Context) (products 
 // GetProductDetailById implements ProductReadAndWrite
 func (p ProductRepositoryPostgres) GetProductDetailById(ctx context.Context, id int) (product ProductEntity, err error) {
 	query := `
-		SELECT id, name, description, price, stock, created_at
+		SELECT id, name, category, description, price, stock, created_at
 		FROM products
 		WHERE id=$1
 	`
@@ -61,6 +63,7 @@ func (p ProductRepositoryPostgres) GetProductDetailById(ctx context.Context, id 
 	err = row.Scan(
 		&product.Id,
 		&product.Name,
+		&product.Category,
 		&product.Description,
 		&product.Price,
 		&product.Stock,
@@ -77,9 +80,9 @@ func (p ProductRepositoryPostgres) GetProductDetailById(ctx context.Context, id 
 func (p ProductRepositoryPostgres) InsertProduct(ctx context.Context, req ProductModel) (err error) {
 	query := `
 		INSERT INTO products (
-			name, description, price, stock, created_at
+			name, description, price, stock, created_at, category
 		) VALUES (
-			$1, $2, $3, $4, $5
+			$1, $2, $3, $4, $5, $6
 		)
 	`
 
@@ -89,7 +92,10 @@ func (p ProductRepositoryPostgres) InsertProduct(ctx context.Context, req Produc
 		req.Price,
 		req.Stock,
 		req.CreatedAt,
+		req.Category,
 	)
+
+	fmt.Println("cat", req.Category)
 
 	return
 }
