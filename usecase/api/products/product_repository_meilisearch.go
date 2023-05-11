@@ -3,7 +3,6 @@ package products
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/meilisearch/meilisearch-go"
 )
@@ -51,8 +50,17 @@ func (p ProductRepositoryMeilisearch) SearchProduct(ctx context.Context, keyword
 		return
 	}
 
-	fmt.Println(resp.Hits...)
-	// fmt.Println(resp)
+	respByte, err := json.Marshal(resp.Hits)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(respByte, &products)
+
+	if err != nil {
+		return
+	}
+
 	return
 }
 

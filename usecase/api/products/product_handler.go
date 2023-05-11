@@ -58,3 +58,30 @@ func (p ProductHandler) CreateNewProduct(c *fiber.Ctx) error {
 		Message: "create product success",
 	})
 }
+
+func (p ProductHandler) SearchProduct(c *fiber.Ctx) error {
+	var req = ProductSearchModel{}
+
+	if err := c.BodyParser(&req); err != nil {
+		return response.FiberResponse(c, response.Response{
+			Status:  http.StatusInternalServerError,
+			Error:   err,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := p.svc.SearchProduct(c.Context(), req.Keyword)
+	if err != nil {
+		return response.FiberResponse(c, response.Response{
+			Status:  http.StatusInternalServerError,
+			Error:   err,
+			Message: err.Error(),
+		})
+	}
+
+	return response.FiberResponse(c, response.Response{
+		Status:  http.StatusOK,
+		Message: "search success",
+		Data:    products,
+	})
+}

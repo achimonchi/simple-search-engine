@@ -76,9 +76,9 @@ func (p ProductService) GetAllProduct(ctx context.Context) (products []ProductEn
 	return
 }
 
-func (p ProductService) SearchProduct(ctx context.Context, keyword string) (err error) {
+func (p ProductService) SearchProduct(ctx context.Context, keyword string) (products []ProductEntity, err error) {
 
-	_, err = p.search.SearchProduct(ctx, keyword)
+	products, err = p.search.SearchProduct(ctx, keyword)
 	return
 }
 

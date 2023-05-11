@@ -21,3 +21,7 @@ type ProductModel struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Category    string    `json:"category"`
 }
+
+type ProductSearchModel struct {
+	Keyword string `json:"keyword"`
+}

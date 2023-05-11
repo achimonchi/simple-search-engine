@@ -81,6 +81,7 @@ func TestGetAllProduct(t *testing.T) {
 func TestSearchProduct(t *testing.T) {
 	ctx := context.Background()
 
-	err := svc.SearchProduct(ctx, "jaacket")
+	products, err := svc.SearchProduct(ctx, "jaxket")
 	require.Nil(t, err)
+	require.NotNil(t, products)
 }
