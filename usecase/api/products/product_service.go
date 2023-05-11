@@ -2,6 +2,8 @@ package products
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"time"
 )
 
@@ -16,11 +18,12 @@ type ProductRead interface {
 // focus for handle searching product
 type ProductSearch interface {
 	SearchProduct(ctx context.Context, keyword string) (products []ProductEntity, err error)
+	SyncProduct(ctx context.Context, products []ProductEntity) (err error)
 }
 
 // focus for handle write product into database
 type ProductWrite interface {
-	InsertProduct(ctx context.Context, req ProductModel) (err error)
+	InsertProduct(ctx context.Context, req ProductModel) (lastId int, err error)
 }
 
 type ProductSearchAndWrite interface {
@@ -53,12 +56,21 @@ func (p ProductService) SetSearchRepository(search ProductSearchAndWrite) Produc
 
 func (p ProductService) CreateProduct(ctx context.Context, req ProductModel) (err error) {
 	req.CreatedAt = time.Now()
+
 	// insert into repository
-	err = p.repo.InsertProduct(ctx, req)
+	lastId, err := p.repo.InsertProduct(ctx, req)
 	if err != nil {
 		return
 	}
 
+	req.Id = lastId
+	reqChan := make(chan bool)
+	doneChan := make(chan bool)
+	go p.syncToSearchEngine(ctx, reqChan, doneChan)
+	reqChan <- true
+
+	done := <-doneChan
+	fmt.Println(done)
 	return
 
 }
@@ -66,4 +78,26 @@ func (p ProductService) CreateProduct(ctx context.Context, req ProductModel) (er
 func (p ProductService) GetAllProduct(ctx context.Context) (products []ProductEntity, err error) {
 	products, err = p.repo.GetProductAll(ctx)
 	return
+}
+
+func (p ProductService) syncToSearchEngine(ctx context.Context, req chan bool, done chan bool) {
+	process := <-req
+
+	// fmt.Println(process)
+
+	if process {
+		products, err := p.repo.GetProductAll(ctx)
+		if err != nil {
+			log.Println("error when get all products with error :", err.Error())
+			return
+		}
+		err = p.search.SyncProduct(ctx, products)
+		if err != nil {
+			log.Println("error when try to sync product with error :", err.Error())
+			return
+		}
+		close(req)
+	}
+
+	done <- true
 }

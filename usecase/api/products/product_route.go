@@ -8,10 +8,13 @@ import (
 )
 
 func RegisterRoute(router fiber.Router, dbConn db.DatabaseConnection, searchClient search.Search) {
-	productRepo := NewProductRepository().SetDatabaseConnection(dbConn)
+	productRepo := NewProductRepository().SetDatabaseConnection(dbConn).SetSearchEngineClient(searchClient)
 
 	repo := productRepo.BuildProductRepositoryPostgres()
-	pService := NewProductService().SetRepository(repo)
+	searchEngine := productRepo.BuildProductRepositoryMeilisearch()
+	pService := NewProductService().
+		SetRepository(repo).
+		SetSearchRepository(searchEngine)
 	pHandler := NewProductHandler(pService)
 
 	productRoute := router.Group("/products")

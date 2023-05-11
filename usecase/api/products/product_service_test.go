@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"meilisearch/pkg/db"
+	"meilisearch/pkg/search"
 	"strings"
 	"testing"
 
@@ -22,20 +23,33 @@ func init() {
 		Dbname:  "search",
 		Sslmode: db.SSL_DISABLE,
 	})
-	builderRepo := NewProductRepository().SetDatabaseConnection(dbConn)
+
+	searchClient, _ := search.ConnectMeili(search.SearchOption{
+		Host:   "http://localhost:7700",
+		APIKey: "ThisIsMasterKey",
+	})
+
+	searchClient.Meilisearch.DeleteIndex("products")
+
+	builderRepo := NewProductRepository().
+		SetDatabaseConnection(dbConn).
+		SetSearchEngineClient(searchClient)
 
 	repo := builderRepo.BuildProductRepositoryPostgres()
-	svc = NewProductService().SetRepository(repo)
+	searchEngine := builderRepo.BuildProductRepositoryMeilisearch()
+	svc = NewProductService().
+		SetRepository(repo).
+		SetSearchRepository(searchEngine)
 }
 
 func TestCreateProduct(t *testing.T) {
 	ctx := context.Background()
 	req := ProductModel{
-		Name:        "Product 1",
+		Name:        "Product 5",
 		Price:       10000,
 		Stock:       20,
 		Description: "Ini adalah product 1",
-		Category:    "Baju",
+		Category:    "Celana",
 	}
 
 	err := svc.CreateProduct(ctx, req)

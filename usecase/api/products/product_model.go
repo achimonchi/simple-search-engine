@@ -13,10 +13,11 @@ type ProductEntity struct {
 }
 
 type ProductModel struct {
-	Name        string    `db:"name"`
-	Price       float64   `db:"price"`
-	Stock       int       `db:"stock"`
-	Description string    `db:"description"`
-	CreatedAt   time.Time `db:"created_at"`
-	Category    string    `db:"category"`
+	Id          int       `json:"id"`
+	Name        string    `json:"name"`
+	Price       float64   `json:"price"`
+	Stock       int       `json:"stock"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	Category    string    `json:"category"`
 }

@@ -3,7 +3,6 @@ package products
 import (
 	"context"
 	"database/sql"
-	"fmt"
 )
 
 func NewProductRepositoryPostgres(db *sql.DB) ProductRepositoryPostgres {
@@ -77,25 +76,24 @@ func (p ProductRepositoryPostgres) GetProductDetailById(ctx context.Context, id 
 }
 
 // InsertProduct implements ProductReadAndWrite
-func (p ProductRepositoryPostgres) InsertProduct(ctx context.Context, req ProductModel) (err error) {
+func (p ProductRepositoryPostgres) InsertProduct(ctx context.Context, req ProductModel) (lastId int, err error) {
 	query := `
 		INSERT INTO products (
 			name, description, price, stock, created_at, category
 		) VALUES (
 			$1, $2, $3, $4, $5, $6
 		)
+		RETURNING id;
 	`
 
-	_, err = p.db.ExecContext(ctx, query,
+	err = p.db.QueryRowContext(ctx, query,
 		req.Name,
 		req.Description,
 		req.Price,
 		req.Stock,
 		req.CreatedAt,
 		req.Category,
-	)
-
-	fmt.Println("cat", req.Category)
+	).Scan(&lastId)
 
 	return
 }
