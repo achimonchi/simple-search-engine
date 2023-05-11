@@ -20,5 +20,6 @@ func RegisterRoute(router fiber.Router, dbConn db.DatabaseConnection, searchClie
 	productRoute := router.Group("/products")
 	{
 		productRoute.Get("/", pHandler.GetAll)
+		productRoute.Post("/", pHandler.CreateNewProduct)
 	}
 }

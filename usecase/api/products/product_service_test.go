@@ -45,11 +45,11 @@ func init() {
 func TestCreateProduct(t *testing.T) {
 	ctx := context.Background()
 	req := ProductModel{
-		Name:        "Product 5",
+		Name:        "Product 2",
 		Price:       10000,
 		Stock:       20,
 		Description: "Ini adalah product 1",
-		Category:    "Celana",
+		Category:    "Jaket",
 	}
 
 	err := svc.CreateProduct(ctx, req)
@@ -76,4 +76,11 @@ func TestGetAllProduct(t *testing.T) {
 		fmt.Println("CreatedAt \t:", p.CreatedAt)
 		fmt.Println(str + str)
 	}
+}
+
+func TestSearchProduct(t *testing.T) {
+	ctx := context.Background()
+
+	err := svc.SearchProduct(ctx, "jaacket")
+	require.Nil(t, err)
 }

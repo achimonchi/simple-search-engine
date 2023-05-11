@@ -14,6 +14,8 @@ func NewProductRepositoryMeilisearch(client *meilisearch.Client) ProductReposito
 	}
 }
 
+const INDEX_PRODUCTS = "products_search"
+
 type ProductRepositoryMeilisearch struct {
 	client *meilisearch.Client
 }
@@ -32,7 +34,7 @@ func (p ProductRepositoryMeilisearch) SyncProduct(ctx context.Context, products 
 		return
 	}
 
-	_, err = p.client.Index("products").AddDocuments(meiliReqs)
+	_, err = p.client.Index(INDEX_PRODUCTS).UpdateDocuments(meiliReqs)
 	if err != nil {
 		return
 	}
@@ -41,19 +43,42 @@ func (p ProductRepositoryMeilisearch) SyncProduct(ctx context.Context, products 
 
 // SearchProduct implements ProductSearchAndWrite
 func (p ProductRepositoryMeilisearch) SearchProduct(ctx context.Context, keyword string) (products []ProductEntity, err error) {
-	resp, err := p.client.Index("products").Search(keyword, &meilisearch.SearchRequest{
+	resp, err := p.client.Index(INDEX_PRODUCTS).Search(keyword, &meilisearch.SearchRequest{
 		Limit: 10,
 	})
+
 	if err != nil {
 		return
 	}
 
 	fmt.Println(resp.Hits...)
+	// fmt.Println(resp)
 	return
 }
 
 // InsertProduct implements ProductSearchAndWrite
 func (p ProductRepositoryMeilisearch) InsertProduct(ctx context.Context, req ProductModel) (lastId int, err error) {
+	var meiliReqs = []map[string]interface{}{}
 
+	jsonReq, err := json.Marshal(req)
+	if err != nil {
+		return
+	}
+
+	var newReq = map[string]interface{}{}
+
+	err = json.Unmarshal(jsonReq, &newReq)
+	if err != nil {
+		return
+	}
+
+	newReq["id"] = req.Id
+
+	meiliReqs = append(meiliReqs, newReq)
+
+	_, err = p.client.Index(INDEX_PRODUCTS).UpdateDocuments(meiliReqs)
+	if err != nil {
+		return
+	}
 	return
 }

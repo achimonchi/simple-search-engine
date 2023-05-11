@@ -2,7 +2,6 @@ package products
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 )
@@ -55,6 +54,7 @@ func (p ProductService) SetSearchRepository(search ProductSearchAndWrite) Produc
 }
 
 func (p ProductService) CreateProduct(ctx context.Context, req ProductModel) (err error) {
+
 	req.CreatedAt = time.Now()
 
 	// insert into repository
@@ -64,13 +64,9 @@ func (p ProductService) CreateProduct(ctx context.Context, req ProductModel) (er
 	}
 
 	req.Id = lastId
-	reqChan := make(chan bool)
-	doneChan := make(chan bool)
-	go p.syncToSearchEngine(ctx, reqChan, doneChan)
-	reqChan <- true
 
-	done := <-doneChan
-	fmt.Println(done)
+	go p.search.InsertProduct(ctx, req)
+
 	return
 
 }
@@ -80,6 +76,13 @@ func (p ProductService) GetAllProduct(ctx context.Context) (products []ProductEn
 	return
 }
 
+func (p ProductService) SearchProduct(ctx context.Context, keyword string) (err error) {
+
+	_, err = p.search.SearchProduct(ctx, keyword)
+	return
+}
+
+// if you want to sync data for search engine, use this.
 func (p ProductService) syncToSearchEngine(ctx context.Context, req chan bool, done chan bool) {
 	process := <-req
 

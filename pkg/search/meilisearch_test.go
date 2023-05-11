@@ -10,7 +10,10 @@ var s Search
 var err error
 
 func init() {
-
+	s, err = ConnectMeili(SearchOption{
+		Host:   "http://localhost:7700",
+		APIKey: "ThisIsMasterKey",
+	})
 }
 
 func TestConnectMeilisearch(t *testing.T) {
@@ -34,4 +37,15 @@ func TestConnectMeilisearch(t *testing.T) {
 		require.Equal(t, err.Error(), "meilisearch not healthy")
 
 	})
+}
+
+func TestInsertData(t *testing.T) {
+	documents := []map[string]interface{}{
+		{
+			"title":  "",
+			"genres": "comedy",
+			"id":     22123,
+		},
+	}
+	s.Meilisearch.Index("products").UpdateDocuments(documents)
 }

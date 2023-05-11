@@ -30,25 +30,20 @@ func main() {
 		panic(err)
 	}
 
-	migrateUp := flag.Bool("migrate-up", false, "setup migration for golang")
-	migrateDown := flag.Bool("migrate-down", false, "setup migration for golang")
+	migrate := flag.String("migrate", "", "setup migration for golang. you can use `up` or `down`")
 
 	flag.Parse()
 
 	// setup migration up
 	// will create several tables
-	if *migrateUp {
+	if *migrate == "up" {
 		dbConn.MigratePostgres()
-	}
-
-	// setup migration down
-	// will remove several tables
-	if *migrateDown {
+	} else if *migrate == "down" {
 		dbConn.RemoveTablePostgres()
 	}
 
 	// if no migrate setup, will running API server
-	if !*migrateUp && !*migrateDown {
+	if *migrate == "" {
 		myAPI := api.NewAPI().
 			SetDatabase(dbConn).
 			SetPort(":8888").
