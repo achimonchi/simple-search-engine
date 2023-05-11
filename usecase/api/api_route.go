@@ -2,6 +2,7 @@ package api
 
 import (
 	"meilisearch/pkg/db"
+	"meilisearch/pkg/search"
 	"meilisearch/usecase/api/products"
 	"runtime"
 
@@ -9,11 +10,12 @@ import (
 )
 
 type API struct {
-	router     fiber.Router
-	dbConn     db.DatabaseConnection
-	app        *fiber.App
-	port       string
-	maxProcess int
+	router       fiber.Router
+	dbConn       db.DatabaseConnection
+	searchClient search.Search
+	app          *fiber.App
+	port         string
+	maxProcess   int
 }
 
 func NewAPI() API {
@@ -42,6 +44,12 @@ func (a API) SetDatabase(dbConn db.DatabaseConnection) API {
 	a.dbConn = dbConn
 	return a
 }
+
+func (a API) SetSearchClient(searchClient search.Search) API {
+	a.searchClient = searchClient
+	return a
+}
+
 func (a API) SetPort(port string) API {
 	a.port = port
 	return a
@@ -54,7 +62,7 @@ func (a API) SetMaxProcess(maxProcess int) API {
 func (a API) GenerateRoute() {
 	runtime.GOMAXPROCS(a.maxProcess)
 
-	products.RegisterRoute(a.router, a.dbConn)
+	products.RegisterRoute(a.router, a.dbConn, a.searchClient)
 
 	if err := a.app.Listen(a.port); err != nil {
 		panic(err)

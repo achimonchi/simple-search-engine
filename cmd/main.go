@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"meilisearch/pkg/db"
+	"meilisearch/pkg/search"
 	"meilisearch/usecase/api"
 )
 
@@ -14,6 +15,15 @@ func main() {
 		Pass:    "user-pass",
 		Dbname:  "search",
 		Sslmode: db.SSL_DISABLE,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	searchClient, err := search.ConnectMeili(search.SearchOption{
+		Host:   "http://localhost:7700",
+		APIKey: "ThisIsMasterKey",
 	})
 
 	if err != nil {
@@ -39,7 +49,11 @@ func main() {
 
 	// if no migrate setup, will running API server
 	if !*migrateUp && !*migrateDown {
-		myAPI := api.NewAPI().SetDatabase(dbConn).SetPort(":8888").SetMaxProcess(1)
+		myAPI := api.NewAPI().
+			SetDatabase(dbConn).
+			SetPort(":8888").
+			SetMaxProcess(1).
+			SetSearchClient(searchClient)
 
 		myAPI.GenerateRoute()
 	}
