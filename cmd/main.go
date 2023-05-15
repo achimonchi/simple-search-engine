@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"meilisearch/pkg/db"
 	"meilisearch/pkg/search"
 	"meilisearch/usecase/api"
@@ -31,6 +32,7 @@ func main() {
 	}
 
 	migrate := flag.String("migrate", "", "setup migration for golang. you can use `up` or `down`")
+	migrateSearch := flag.String("migrate-search", "", "setup migration for search engine")
 
 	flag.Parse()
 
@@ -40,6 +42,13 @@ func main() {
 		dbConn.MigratePostgres()
 	} else if *migrate == "down" {
 		dbConn.RemoveTablePostgres()
+	}
+
+	if *migrateSearch == "up" {
+		err := searchClient.MigrateUp("deploy/data.json")
+		if err != nil {
+			log.Println("error when try to migrate search data with error :", err)
+		}
 	}
 
 	// if no migrate setup, will running API server

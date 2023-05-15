@@ -43,7 +43,8 @@ func (p ProductRepositoryMeilisearch) SyncProduct(ctx context.Context, products 
 // SearchProduct implements ProductSearchAndWrite
 func (p ProductRepositoryMeilisearch) SearchProduct(ctx context.Context, keyword string) (products []ProductEntity, err error) {
 	resp, err := p.client.Index(INDEX_PRODUCTS).Search(keyword, &meilisearch.SearchRequest{
-		Limit: 10,
+		Limit:       100,
+		HitsPerPage: 100,
 	})
 
 	if err != nil {
