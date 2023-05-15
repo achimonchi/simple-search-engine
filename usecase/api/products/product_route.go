@@ -24,6 +24,7 @@ func RegisterRoute(router fiber.Router, dbConn db.DatabaseConnection, searchClie
 	{
 		productRoute.Get("/", pHandler.GetAll)
 		productRoute.Post("/", pHandler.CreateNewProduct)
-		productRoute.Post("/search", pHandler.SearchProduct)
+		productRoute.Post("/search/meili", pHandler.SearchProductMeili)
+		productRoute.Post("/search/typesense", pHandler.SearchProductTypesense)
 	}
 }
