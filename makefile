@@ -5,7 +5,8 @@ run:
 	go run cmd/main.go
 
 migrate-up:
-	go run cmd/main.go -migrate=up
+	go run cmd/main.go -migrate=up -migrate-search=up
 	
 migrate-down:
 	go run cmd/main.go -migrate=down
+

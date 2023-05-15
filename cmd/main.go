@@ -72,7 +72,7 @@ func main() {
 	}
 
 	// if no migrate setup, will running API server
-	if *migrate == "" {
+	if *migrate == "" && *migrateSearch == "" {
 		myAPI := api.NewAPI().
 			SetDatabase(dbConn).
 			SetPort(":8888").
