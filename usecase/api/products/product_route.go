@@ -11,10 +11,13 @@ func RegisterRoute(router fiber.Router, dbConn db.DatabaseConnection, searchClie
 	productRepo := NewProductRepository().SetDatabaseConnection(dbConn).SetSearchEngineClient(searchClient)
 
 	repo := productRepo.BuildProductRepositoryPostgres()
-	searchEngine := productRepo.BuildProductRepositoryMeilisearch()
+	searchMeili := productRepo.BuildProductRepositoryMeilisearch()
+	searchTypesense := productRepo.BuildProductRepositoryTypesense()
+
 	pService := NewProductService().
 		SetRepository(repo).
-		SetSearchRepository(searchEngine)
+		SetSearchMeiliRepository(searchMeili).
+		SetSearchTypesenseRepository(searchTypesense)
 	pHandler := NewProductHandler(pService)
 
 	productRoute := router.Group("/products")

@@ -11,8 +11,8 @@ import (
 	"github.com/meilisearch/meilisearch-go"
 )
 
-func ConnectMeili(option SearchOption) (s Search, err error) {
-	client := meilisearch.NewClient(meilisearch.ClientConfig{
+func ConnectMeili(option SearchOption) (client *meilisearch.Client, err error) {
+	client = meilisearch.NewClient(meilisearch.ClientConfig{
 		Host:   option.Host, // like http://localhost:7700
 		APIKey: option.APIKey,
 	})
@@ -21,7 +21,7 @@ func ConnectMeili(option SearchOption) (s Search, err error) {
 		err = errors.New("meilisearch not healthy")
 		return
 	}
-	s.Meilisearch = client
+	// s.Meilisearch = client
 	return
 }
 

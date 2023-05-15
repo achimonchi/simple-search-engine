@@ -11,30 +11,32 @@ var s2 Search
 var err2 error
 
 func init() {
-	s2, err2 = ConnectTypesense(SearchOption{
+
+	client, _ := ConnectTypesense(SearchOption{
 		Host:   "http://localhost:8108",
 		APIKey: "ThisIsMasterKey",
 	})
+	s2.Typesense = client
 }
 
 func TestConnectTypesense(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		s, err = ConnectTypesense(SearchOption{
+		client, err := ConnectTypesense(SearchOption{
 			Host:   "http://localhost:8108",
 			APIKey: "ThisIsMasterKey",
 		})
 
 		require.Nil(t, err)
-		require.NotNil(t, s.Typesense)
+		require.NotNil(t, client)
 	})
 	t.Run("error", func(t *testing.T) {
-		s, err = ConnectTypesense(SearchOption{
+		client, err := ConnectTypesense(SearchOption{
 			Host:   "http://localhost:8118",
 			APIKey: "ThisIsMasterKey",
 		})
 
 		require.NotNil(t, err)
-		require.Nil(t, s.Typesense)
+		require.Nil(t, client)
 	})
 }
 

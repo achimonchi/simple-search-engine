@@ -30,3 +30,7 @@ func (p ProductRepository) BuildProductRepositoryPostgres() ProductRepositoryPos
 func (p ProductRepository) BuildProductRepositoryMeilisearch() ProductRepositoryMeilisearch {
 	return NewProductRepositoryMeilisearch(p.searchClient.Meilisearch)
 }
+
+func (p ProductRepository) BuildProductRepositoryTypesense() ProductRepositoryTypesense {
+	return NewProductRepositoryTypesense(p.searchClient.Typesense)
+}

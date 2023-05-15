@@ -10,25 +10,27 @@ var s Search
 var err error
 
 func init() {
-	s, err = ConnectMeili(SearchOption{
+	client, _ := ConnectMeili(SearchOption{
 		Host:   "http://localhost:7700",
 		APIKey: "ThisIsMasterKey",
 	})
+
+	s.Meilisearch = client
 }
 
 func TestConnectMeilisearch(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		s, err = ConnectMeili(SearchOption{
+		s, err := ConnectMeili(SearchOption{
 			Host:   "http://localhost:7700",
 			APIKey: "ThisIsMasterKey",
 		})
 
 		require.Nil(t, err)
-		require.NotNil(t, s.Meilisearch)
+		require.NotNil(t, s)
 
 	})
 	t.Run("error", func(t *testing.T) {
-		s, err = ConnectMeili(SearchOption{
+		_, err := ConnectMeili(SearchOption{
 			Host:   "http://localhost:770",
 			APIKey: "ThisIsMasterKey",
 		})

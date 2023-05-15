@@ -24,22 +24,31 @@ func init() {
 		Sslmode: db.SSL_DISABLE,
 	})
 
-	searchClient, _ := search.ConnectMeili(search.SearchOption{
+	searchClient := search.NewSearchEngine()
+
+	client, _ := search.ConnectMeili(search.SearchOption{
 		Host:   "http://localhost:7700",
 		APIKey: "ThisIsMasterKey",
 	})
+	clientTypesense, _ := search.ConnectTypesense(search.SearchOption{
+		Host:   "http://localhost:8108",
+		APIKey: "ThisIsMasterKey",
+	})
 
-	searchClient.Meilisearch.DeleteIndex("products")
+	searchClient = searchClient.SetMeilisearch(client).SetTypesense(clientTypesense)
 
 	builderRepo := NewProductRepository().
 		SetDatabaseConnection(dbConn).
 		SetSearchEngineClient(searchClient)
 
 	repo := builderRepo.BuildProductRepositoryPostgres()
-	searchEngine := builderRepo.BuildProductRepositoryMeilisearch()
+	searchMeili := builderRepo.BuildProductRepositoryMeilisearch()
+	searchTypesense := builderRepo.BuildProductRepositoryTypesense()
+
 	svc = NewProductService().
 		SetRepository(repo).
-		SetSearchRepository(searchEngine)
+		SetSearchMeiliRepository(searchMeili).
+		SetSearchTypesenseRepository(searchTypesense)
 }
 
 func TestCreateProduct(t *testing.T) {
@@ -84,4 +93,31 @@ func TestSearchProduct(t *testing.T) {
 	products, err := svc.SearchProduct(ctx, "jaxket")
 	require.Nil(t, err)
 	require.NotNil(t, products)
+}
+
+func TestSearchProductByTypesense(t *testing.T) {
+	ctx := context.Background()
+
+	products, err := svc.SearchProductTypesense(ctx, "cooper")
+	require.Nil(t, err)
+	fmt.Println(products)
+}
+
+func BenchmarkSearchProductByMeilisearch(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ctx := context.Background()
+		products, err := svc.SearchProduct(ctx, "cooper")
+		_ = products
+		_ = err
+	}
+}
+func BenchmarkSearchProductByTypesense(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		ctx := context.Background()
+		products, err := svc.SearchProductTypesense(ctx, "cooper")
+		_ = products
+		_ = err
+	}
 }

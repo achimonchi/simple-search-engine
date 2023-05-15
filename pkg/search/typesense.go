@@ -12,8 +12,8 @@ import (
 	"github.com/typesense/typesense-go/typesense/api"
 )
 
-func ConnectTypesense(option SearchOption) (s Search, err error) {
-	client := typesense.NewClient(
+func ConnectTypesense(option SearchOption) (client *typesense.Client, err error) {
+	client = typesense.NewClient(
 		typesense.WithServer(option.Host),
 		typesense.WithAPIKey(option.APIKey),
 		typesense.WithConnectionTimeout(5*time.Second),
@@ -23,7 +23,7 @@ func ConnectTypesense(option SearchOption) (s Search, err error) {
 		return
 	}
 
-	s.Typesense = client
+	// s.Typesense = client
 	return
 }
 

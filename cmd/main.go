@@ -22,7 +22,10 @@ func main() {
 		panic(err)
 	}
 
-	searchClient, err := search.ConnectMeili(search.SearchOption{
+	searchClient := search.NewSearchEngine()
+
+	// setup meilisearch
+	meiliClient, err := search.ConnectMeili(search.SearchOption{
 		Host:   "http://localhost:7700",
 		APIKey: "ThisIsMasterKey",
 	})
@@ -30,6 +33,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// setup typesense search
+	typesenseClient, err := search.ConnectTypesense(search.SearchOption{
+		Host:   "http://localhost:8108",
+		APIKey: "ThisIsMasterKey",
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	searchClient = searchClient.
+		SetMeilisearch(meiliClient).
+		SetTypesense(typesenseClient)
 
 	migrate := flag.String("migrate", "", "setup migration for golang. you can use `up` or `down`")
 	migrateSearch := flag.String("migrate-search", "", "setup migration for search engine")
@@ -46,6 +62,10 @@ func main() {
 
 	if *migrateSearch == "up" {
 		err := searchClient.MigrateUp("deploy/data.json")
+		if err != nil {
+			log.Println("error when try to migrate search data with error :", err)
+		}
+		err = searchClient.MigrateTypesenseUp("deploy/data.json")
 		if err != nil {
 			log.Println("error when try to migrate search data with error :", err)
 		}
