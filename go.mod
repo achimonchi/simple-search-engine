@@ -7,11 +7,13 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/meilisearch/meilisearch-go v0.24.0
 	github.com/stretchr/testify v1.8.2
+	github.com/typesense/typesense-go v0.6.2
 )
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/deepmap/oapi-codegen v1.9.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -25,6 +27,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
+	github.com/sony/gobreaker v0.5.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.47.0 // indirect

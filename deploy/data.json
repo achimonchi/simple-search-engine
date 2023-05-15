@@ -659,7 +659,7 @@
 		"name": "Guy Keller",
 		"description": "et malesuada fames ac turpis egestas. Aliquam fringilla cursus purus.",
 		"price": 94940,
-		"stock": "0",
+		"stock": 0,
 		"id": 83,
 		"category": "Celana"
 	},
@@ -1419,7 +1419,7 @@
 		"name": "Mohammad Malone",
 		"description": "dolor. Fusce mi lorem, vehicula et, rutrum eu, ultrices sit",
 		"price": 64850,
-		"stock": "0",
+		"stock": 0,
 		"id": 178,
 		"category": "T-shirt"
 	},
@@ -2771,7 +2771,7 @@
 		"name": "Brady Vinson",
 		"description": "Nullam suscipit, est ac facilisis facilisis, magna tellus faucibus leo,",
 		"price": 41306,
-		"stock": "0",
+		"stock": 0,
 		"id": 347,
 		"category": "T-shirt"
 	},

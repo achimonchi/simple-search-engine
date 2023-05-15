@@ -4,6 +4,7 @@ services:
   meilisearch:
     image: getmeili/meilisearch:v1.1
     container_name: meilisearch
+    restart: always
     ports:
       - 7700:7700
     environment:
@@ -11,10 +12,20 @@ services:
     volumes:
       - ${PWD}/db/meili:/meili_data 
     command: meilisearch --master-key="ThisIsMasterKey"
+  typesense:
+    image: typesense/typesense:0.24.1
+    container_name: typesense
+    restart:  always
+    ports:
+      - "8108:8108"
+    volumes:
+      - ${PWD}/db/typesense:/data
+    command: '--data-dir /data --api-key=ThisIsMasterKey --enable-cors'
 
   postgres:
     image: postgres:alpine
     container_name: postgres-search
+    restart: always
     ports:
       - 6632:5432
     environment:
