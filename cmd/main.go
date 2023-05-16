@@ -6,15 +6,16 @@ import (
 	"meilisearch/pkg/db"
 	"meilisearch/pkg/search"
 	"meilisearch/usecase/api"
+	"os"
 )
 
 func main() {
 	dbConn, err := db.ConnectPostgres(db.DatabaseOption{
-		Host:    "localhost",
-		Port:    "6632",
-		User:    "user-search",
-		Pass:    "user-pass",
-		Dbname:  "search",
+		Host:    getConfig("DB_HOST", "localhost"),
+		Port:    getConfig("DB_PORT", "6632"),
+		User:    getConfig("DB_USER", "user-search"),
+		Pass:    getConfig("DB_PASS", "user-pass"),
+		Dbname:  getConfig("DB_NAME", "search"),
 		Sslmode: db.SSL_DISABLE,
 	})
 
@@ -26,8 +27,8 @@ func main() {
 
 	// setup meilisearch
 	meiliClient, err := search.ConnectMeili(search.SearchOption{
-		Host:   "http://localhost:7700",
-		APIKey: "ThisIsMasterKey",
+		Host:   getConfig("MEILI_HOST", "http://localhost:7700"),
+		APIKey: getConfig("MEILI_APIKEY", "ThisIsMasterKey"),
 	})
 
 	if err != nil {
@@ -36,8 +37,8 @@ func main() {
 
 	// setup typesense search
 	typesenseClient, err := search.ConnectTypesense(search.SearchOption{
-		Host:   "http://localhost:8108",
-		APIKey: "ThisIsMasterKey",
+		Host:   getConfig("TYPESENSE_HOST", "http://localhost:8108"),
+		APIKey: getConfig("TYPESENSE_APIKEY", "ThisIsMasterKey"),
 	})
 	if err != nil {
 		panic(err)
@@ -82,4 +83,12 @@ func main() {
 		myAPI.GenerateRoute()
 	}
 
+}
+
+func getConfig(key string, fallback string) (config string) {
+	config = os.Getenv(key)
+	if config == "" {
+		config = fallback
+	}
+	return
 }

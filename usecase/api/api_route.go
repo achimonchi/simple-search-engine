@@ -20,7 +20,6 @@ type API struct {
 
 func NewAPI() API {
 	app := fiber.New(fiber.Config{
-		Prefork: true,
 		AppName: "Search Engine - NBID",
 	})
 
@@ -63,8 +62,8 @@ func (a API) GenerateRoute() {
 	runtime.GOMAXPROCS(a.maxProcess)
 
 	products.RegisterRoute(a.router, a.dbConn, a.searchClient)
-
-	if err := a.app.Listen(a.port); err != nil {
+	err := a.app.Listen(a.port)
+	if err != nil {
 		panic(err)
 	}
 

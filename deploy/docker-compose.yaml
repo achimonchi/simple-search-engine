@@ -12,9 +12,10 @@ services:
     volumes:
       - ${PWD}/db/meili:/meili_data 
     command: meilisearch --master-key="ThisIsMasterKey"
+
   typesense:
     image: typesense/typesense:0.24.1
-    container_name: typesense
+    container_name: typesense_search
     restart:  always
     ports:
       - "8108:8108"
@@ -34,3 +35,33 @@ services:
       - POSTGRES_DB=search
     volumes:
       - ${PWD}/db/postgres:/var/lib/postgresql/data
+  
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - 9091:9090
+    restart: always
+    depends_on:
+      - cadvisor
+  
+  cadvisor:
+    image: google/cadvisor
+    container_name: cadvisor
+    ports:
+      - 8181:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+
+networks:
+  research:
+    driver: host
+    
+

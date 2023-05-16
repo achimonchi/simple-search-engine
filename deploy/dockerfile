@@ -1,0 +1,15 @@
+FROM golang:alpine as builder
+
+WORKDIR /research
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main ./cmd/main.go
+
+FROM scratch
+
+WORKDIR /research
+
+COPY --from=builder /research/main .
+
+CMD ["./main"]
