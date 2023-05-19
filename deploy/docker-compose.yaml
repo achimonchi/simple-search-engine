@@ -12,6 +12,8 @@ services:
     volumes:
       - ${PWD}/db/meili:/meili_data 
     command: meilisearch --master-key="ThisIsMasterKey"
+    networks:
+      - research
 
   typesense:
     image: typesense/typesense:0.24.1
@@ -22,6 +24,8 @@ services:
     volumes:
       - ${PWD}/db/typesense:/data
     command: '--data-dir /data --api-key=ThisIsMasterKey --enable-cors'
+    networks:
+      - research
 
   postgres:
     image: postgres:alpine
@@ -35,21 +39,44 @@ services:
       - POSTGRES_DB=search
     volumes:
       - ${PWD}/db/postgres:/var/lib/postgresql/data
+    networks:
+      - research
   
   prometheus:
     container_name: prometheus
     image: prom/prometheus
-    command: --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command: --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9091:9090
     restart: always
     depends_on:
       - cadvisor
-  
+    networks:
+      - research
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    networks:
+      - research
+    volumes:
+      - ${PWD}/db/grafana:/var/lib/grafana
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: monitoring_node_exporter
+    restart: unless-stopped
+    expose:
+      - 9100
+    networks:
+      - research
+
   cadvisor:
-    image: google/cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.46.0
     container_name: cadvisor
     ports:
       - 8181:8080
@@ -58,10 +85,21 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - research
+    depends_on:
+      - meilisearch
+      - typesense
+      - redis-research
+  redis-research:
+    image: redis:latest
+    container_name: redis-research
+    networks:
+      - research
 
 
 networks:
   research:
-    driver: host
+    driver: bridge
     
 
